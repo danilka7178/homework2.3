@@ -53,4 +53,8 @@ button {
   background-color: #fe8468;
   border-radius: 10px;
   cursor: pointer;
+  &:disabled {
+    background-color: #ffa38f;
+    cursor: none;
+  }
 }

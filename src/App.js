@@ -3,25 +3,42 @@ import axios from "axios";
 import Card from "./components/Card";
 
 function App() {
-  const [data, setData] = React.useState("");
+  const [users, setUsers] = React.useState([]);
   const [count, setCount] = React.useState(1);
-
+  const [visibleButton, setvisibleButton] = React.useState(true);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [inputValue, setInputValue] = React.useState("");
 
   React.useEffect(() => {
+    setIsLoading(true);
     axios.get(`https://5c3755177820ff0014d92711.mockapi.io/users?page=${count}&limit=10`)
       .then(({ data }) => {
-        setData(data);
+        setUsers((users) => ([...users, ...data]));
+        if (data.length === 0) {
+          setvisibleButton(false)
+        }
+      })
+      .then(() => {
+        setIsLoading(false);
       });
   }, [count]);
 
-
   return (
     <div className="app">
-      <input type="text" placeholder="Поиск пользователя..." />
+      <input type="text" placeholder="Поиск пользователя..."
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)} />
       <ul className="users">
-        {data ? data.map((arg) => (<Card key={`${arg.id}_${arg.name.toString()}`} name={arg.name} email={arg.email} />)) : "Загрузка"}
+        {users ?
+          users.filter((arg) => arg.name.toLocaleLowerCase().includes(inputValue.toLowerCase()) || arg.email.toLocaleLowerCase().includes(inputValue.toLowerCase()))
+            .map((arg) => (<Card key={`${arg.id}_${arg.name.toString()}`} name={arg.name} email={arg.email} />))
+          : <h3>Loading...</h3>}
       </ul>
-      <button onClick={() => setCount(count + 1)}>Next 10 users</button>
+      {isLoading && <h3>Loading...</h3>}
+      {visibleButton && <button
+        disabled={isLoading}
+        onClick={() => setCount(count + 1)}>
+        {isLoading ? "Wait..." : "Next 10 users"}</button>}
     </div >
   );
 }

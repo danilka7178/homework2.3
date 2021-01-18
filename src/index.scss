@@ -53,6 +53,8 @@ button {
   background-color: #fe8468;
   border-radius: 10px;
   cursor: pointer;
+  font-weight: 700;
+  letter-spacing: 3px;
   &:disabled {
     background-color: #ffa38f;
     cursor: none;
